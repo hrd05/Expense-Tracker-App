@@ -23,7 +23,7 @@
 <div class="container mt-4">
     <div class="signup-form">
         <h2 class="text-center">Login</h2>
-        <form action="/login/user" method="post" onsubmit="loginHandler(event)">
+        <form  onsubmit="loginHandler(event)">
             
             <div class="form-group">
                 <label for="email">Email:</label>
@@ -36,8 +36,10 @@
             <button type="submit" class="btn btn-primary mt-2">Login</button>
         </form>
         <a href="http://localhost:3000/">New user? Signup Now</a>
+        <p id="msg" style="color: red;" style="text-align: center;"></p>
+
     </div>
-    <p id="msg"></p>
+    
 </div>
 <script src="/main.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"></script>
