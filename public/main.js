@@ -4,11 +4,12 @@ function loginHandler(event) {
     const email = event.target.email.value;
     const password = event.target.password.value;
 
-    axios.post("http://localhost:3000/login/user", {email, password})
+    axios.post("http://localhost:3000/user/login", {email, password})
     .then((res) => {
         if(res.status === 200) {
-            alert(res.data.message);
-            // console.log(res.data.message);
+            alert('user logged successfully');
+            //console.log(res.data.message);
+            window.location.href = "/expense";
         }
     })
     .catch(err => {
@@ -18,4 +19,6 @@ function loginHandler(event) {
          msg.textContent = err.response.data.message;
     })
 
+
 };
+

@@ -41,9 +41,10 @@ exports.postLogin = (req, res, next) => {
                 res.status(404).json({ message: 'user not found' });
             }
             else {
-                bcrypt.compare(password, user.password, (err, response) => {
+                bcrypt.compare(password, user.password, (err, result) => {
                     if (!err) {
                         res.status(200).json({ message: 'User logged succesfully' });
+                        // res.redirect('/expense');
                     }
                     else {
                         res.status(401).json({ message: 'incorrect password' });
