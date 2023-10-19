@@ -7,13 +7,15 @@ function loginHandler(event) {
     axios.post("http://localhost:3000/login/user", {email, password})
     .then((res) => {
         if(res.status === 200) {
-            alert(res.data);
+            alert(res.data.message);
+            // console.log(res.data.message);
         }
     })
     .catch(err => {
-        console.log(JSON.stringify(err))
-        const msg = document.getElementById('msg');
-        msg.textContent = err.message;
+        console.log(err)
+        //console.log(err.response.data.message);
+         const msg = document.getElementById('msg');
+         msg.textContent = err.response.data.message;
     })
 
 };
