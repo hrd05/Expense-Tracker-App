@@ -24,11 +24,23 @@ exports.postExpense = (req, res, next) => {
 }
 
 exports.getExpenses = (req, res, next) => {
-    Expense.findAll()
+    Expense.findAll({where: {userId: req.user.id}})
     .then((expenses) => {
         res.status(201).json(expenses);
     })
     .catch(err => console.log(err));
 }
 
+exports.deleteExpense = (req, res, next) => {
+    const id = req.params.id;
+
+    Expense.findByPk(id)
+    .then((expense) => {
+        return expense.destroy();
+    })
+    .then(() => {
+        res.status(204).end();
+    })
+    .catch(err => console.log(err));
+}
 

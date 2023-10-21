@@ -7,9 +7,14 @@ function loginHandler(event) {
     axios.post("http://localhost:3000/user/login", {email, password})
     .then((res) => {
         if(res.status === 200) {
-            alert('user logged successfully');
+            alert(res.data.message);
+            console.log(res.data);
+            localStorage.setItem('token', res.data.token);
             //console.log(res.data.message);
             window.location.href = "/expense";
+        }
+        else{
+            alert('incorrect password');
         }
     })
     .catch(err => {

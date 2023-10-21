@@ -1,6 +1,7 @@
 
 const path = require('path');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/userSignup');
 const { where } = require('sequelize');
@@ -15,11 +16,21 @@ exports.postSignup = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
 
+    User.findOne({ where: { email } })
+        .then((user) => {
+            if (user) {
+                res.status(409).end();
+            }
+            else{
+                return;
+            }
+        })
+
     bcrypt.hash(password, 10, (err, hash) => {
         console.log(err);
         User.create({ name, email, password: hash })
             .then(() => {
-                res.sendFile(path.join(__dirname, '../', 'views', 'login.html'));
+                res.redirect('/login');
 
             })
             .catch(err => console.log(err));
@@ -29,7 +40,13 @@ exports.postSignup = (req, res, next) => {
 
 exports.getLogin = (req, res, next) => {
     res.sendFile(path.join(__dirname, '../', 'views', 'login.html'));
-}
+};
+
+function generateAccessToken(id) {
+   return jwt.sign({userId: id}, 'd3ec4a17b9e89ca0527bba8eab6b546c3c75931f3c245a81503c81732d9d8ef4');
+};
+
+
 
 exports.postLogin = (req, res, next) => {
     const email = req.body.email;
@@ -42,8 +59,8 @@ exports.postLogin = (req, res, next) => {
             }
             else {
                 bcrypt.compare(password, user.password, (err, result) => {
-                    if (!err) {
-                        res.status(200).json({ message: 'User logged succesfully' });
+                    if (!err && result) {
+                        res.status(200).json({ message: 'User logged succesfully' , token: generateAccessToken(user.id)});
                         // res.redirect('/expense');
                     }
                     else {
