@@ -31,10 +31,12 @@ exports.postExpense = (req, res, next) => {
     .catch(err => console.log(err));
 }
 
-exports.getExpenses = (req, res, next) => {
+exports.getExpenses = (req, res) => {
+    const user = req.user;
+    // res.json(user);
     Expense.findAll({where: {userId: req.user.id}})
     .then((expenses) => {
-        res.status(201).json(expenses);
+        res.status(201).json({expenses,  user});
     })
     .catch(err => console.log(err));
 }

@@ -23,6 +23,12 @@
                 <h1 id="header-title">Expense Tracker</h1>
             </div>
         </div>
+        <div class="col-md-6 text-right">
+            <div id="premium-status" style="display: none;">
+                <!-- Here, you can dynamically display the premium user status -->
+                <span class="text-success">Premium User</span>
+            </div>
+        </div>
     </header>
     <div class="container">
         <form action="/expense/addexpense" method="POST" onsubmit="saveToDb(event)" id="addForm" class="form-check-input">

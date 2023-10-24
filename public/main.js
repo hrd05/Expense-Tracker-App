@@ -7,8 +7,8 @@ function loginHandler(event) {
     axios.post("http://localhost:3000/user/login", {email, password})
     .then((res) => {
         if(res.status === 200) {
+            //console.log(res.data);
             alert(res.data.message);
-            console.log(res.data);
             localStorage.setItem('token', res.data.token);
             //console.log(res.data.message);
             window.location.href = "/expense";

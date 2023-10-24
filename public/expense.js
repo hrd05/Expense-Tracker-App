@@ -69,6 +69,8 @@ document.getElementById('rzp-btn1').onclick = async function(e) {
                 payment_id: response.razorpay_payment_id 
             }, {headers: {"Authorization": token}})
             alert('You are a premium user now')
+            window.location.href = "/expense";
+
         },
     };
 
@@ -87,9 +89,18 @@ document.getElementById('rzp-btn1').onclick = async function(e) {
 window.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem('token');
     axios.get("http://localhost:3000/expense/addexpense", {headers: {"Authorization": token}})
-    .then((expenses) => {
-        for(var i=0; i<expenses.data.length; i++ ){
-            showExpense(expenses.data[i]);
+    .then((response) => {
+        //console.log(response.data)
+        //console.log(response.data.expenses[0]);
+        const isPremium = response.data.user.isPremiumUser
+        if(isPremium){
+            btn = document.getElementById('rzp-btn1');
+            btn.style.display = 'none';
+            document.getElementById('premium-status').style.display = 'block';
+        }
+        
+        for(var i=0; i<response.data.expenses.length; i++ ){
+            showExpense(response.data.expenses[i]);
         }
     } )
     .catch(err => console.log(err));
