@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
         integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <title>Expense Tracker</title>
+    <style>
+        button:hover{
+            cursor: pointer;
+        }
+    </style>
 
 </head>
 
@@ -51,6 +56,13 @@
                         <button type="submit" class="btn btn-primary">Add Expense</button>
                     </div>
                 </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <button id="rzp-btn1" type="button" class="btn btn-success" onclick="buyPremium()">Buy Premium</button>
+                        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+                    </div>
+                </div>
             </div>
         </form>
     </div>
@@ -66,6 +78,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"></script>
     <script src="/expense.js"></script>
+    
 </body>
 
 </html>

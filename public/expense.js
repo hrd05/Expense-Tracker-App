@@ -5,15 +5,16 @@ function saveToDb(event) {
     const amount = event.target.amount.value;
     const category = event.target.category.value;
     const description = event.target.description.value;
-
-    userDetail = {
+    
+    expenseDetail = {
         amount,
         category,
         description
     };
-
+    const token = localStorage.getItem('token');
+    console.log(token);
     //console.log(userDetail);
-    axios.post("http://localhost:3000/expense/addexpense", userDetail)
+    axios.post("http://localhost:3000/expense/addexpense", expenseDetail, {headers: {"Authorization": token}})
     .then((expense) => {
         form.reset();
         showExpense(expense.data);
@@ -51,6 +52,38 @@ function showExpense(expense) {
 
 }   
 
+
+document.getElementById('rzp-btn1').onclick = async function(e) {
+    const token = localStorage.getItem('token');
+    const response = await axios.get("http://localhost:3000/purchase/premiummembership", {headers: {"Authorization": token}})
+    //console.log(response)
+
+    var options = {
+        "key": response.data.key_id,
+        "order_id": response.data.order.id,
+        // handler hanldes the success payment
+        "handler": async function(response) {
+            console.log(response);
+            await axios.post("http://localhost:3000/purchase/updatetransactionstatus", {
+                order_id: options.order_id,
+                payment_id: response.razorpay_payment_id 
+            }, {headers: {"Authorization": token}})
+            alert('You are a premium user now')
+        },
+    };
+
+    const rzp1 = new Razorpay(options)
+    rzp1.open();
+    e.preventDefault()
+    rzp1.on('payment.failed', function(response){
+        console.log(response);
+        alert('Something went wrong');
+    });
+};
+
+    
+
+
 window.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem('token');
     axios.get("http://localhost:3000/expense/addexpense", {headers: {"Authorization": token}})
@@ -61,3 +94,4 @@ window.addEventListener("DOMContentLoaded", () => {
     } )
     .catch(err => console.log(err));
 })
+
