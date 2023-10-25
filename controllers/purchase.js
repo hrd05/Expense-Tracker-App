@@ -1,6 +1,8 @@
 const Razorpay = require('razorpay');
 const Order = require('../models/orders');
 const User = require('../models/userSignup');
+const Expense = require('../models/expense');
+const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
 
@@ -48,6 +50,35 @@ exports.updateTransactionstatus = async (req, res) => {
         })
     } catch (err) {
         console.log(err);
-        res.status(403).json({message: 'Something went wrong'});
+        res.status(403).json({ message: 'Something went wrong' });
     }
 };
+
+exports.showLeaderboard = async (req, res) => {
+    try {
+        const expenses = await Expense.findAll();
+        const users = await User.findAll();
+        const combinedExpense = {};
+
+        expenses.forEach((expenses) => {
+            if(combinedExpense[expenses.userId]){
+                combinedExpense[expenses.userId] += expenses.amount;
+            }
+            else{
+                combinedExpense[expenses.userId] = expenses.amount;
+            }
+        });
+        const leaderboard = [];
+        users.forEach((user) => {
+            
+            leaderboard.push({name: user.name, total_Expense: combinedExpense[user.id] || 0});
+        })
+        leaderboard.sort((a,b) => b.total_Expense - a.total_Expense);
+
+        res.status(201).json(leaderboard);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'something went wrong' });
+    }
+
+}

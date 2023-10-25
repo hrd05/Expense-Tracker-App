@@ -10,4 +10,6 @@ router.get('/purchase/premiummembership', authenticateMiddleware.authenticate, p
 
 router.post('/purchase/updatetransactionstatus', authenticateMiddleware.authenticate, purchaseController.updateTransactionstatus);
 
+router.get('/purchase/showleaderboard', authenticateMiddleware.authenticate , purchaseController.showLeaderboard);
+
 module.exports = router;

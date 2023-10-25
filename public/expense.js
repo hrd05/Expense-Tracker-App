@@ -1,3 +1,5 @@
+const leaderBtn = document.getElementById('slbtn2');
+
 function saveToDb(event) {
     event.preventDefault();
     const form = document.getElementById('addForm');
@@ -97,6 +99,11 @@ window.addEventListener("DOMContentLoaded", () => {
             btn = document.getElementById('rzp-btn1');
             btn.style.display = 'none';
             document.getElementById('premium-status').style.display = 'block';
+            leaderBtn.style.display = 'block';
+
+        }else{
+            btn = document.getElementById('rzp-btn1');
+            btn.style.display = 'block';
         }
         
         for(var i=0; i<response.data.expenses.length; i++ ){
@@ -104,5 +111,27 @@ window.addEventListener("DOMContentLoaded", () => {
         }
     } )
     .catch(err => console.log(err));
-})
+});
 
+
+function showLeaderboard() {
+    const token = localStorage.getItem('token');
+    //console.log('in function');
+    axios.get("http://localhost:3000/purchase/showleaderboard", {headers: {"Authorization": token}} )
+    .then((leaderboard) => {
+        console.log(leaderboard.data);
+        for(var i=0;i<leaderboard.data.length;i++){
+            showTotalAmount(leaderboard.data[i]);
+        }
+    })
+    .catch(err => console.log(err));
+}
+
+function showTotalAmount(leaderboard) {
+    const parentElement = document.getElementById('leaderboard');
+    const childElement = document.createElement('li');
+    childElement.className = 'list-group-item';
+
+    childElement.textContent = `Name: ${leaderboard.name} , Total expenses: Rs ${leaderboard.total_Expense}`
+    parentElement.appendChild(childElement);
+}
