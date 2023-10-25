@@ -3,6 +3,7 @@ const Order = require('../models/orders');
 const User = require('../models/userSignup');
 const Expense = require('../models/expense');
 const { Sequelize } = require('sequelize');
+const sequelize = require('../util/database');
 require('dotenv').config();
 
 
@@ -56,24 +57,18 @@ exports.updateTransactionstatus = async (req, res) => {
 
 exports.showLeaderboard = async (req, res) => {
     try {
-        const expenses = await Expense.findAll();
-        const users = await User.findAll();
-        const combinedExpense = {};
 
-        expenses.forEach((expenses) => {
-            if(combinedExpense[expenses.userId]){
-                combinedExpense[expenses.userId] += expenses.amount;
-            }
-            else{
-                combinedExpense[expenses.userId] = expenses.amount;
-            }
-        });
-        const leaderboard = [];
-        users.forEach((user) => {
-            
-            leaderboard.push({name: user.name, total_Expense: combinedExpense[user.id] || 0});
-        })
-        leaderboard.sort((a,b) => b.total_Expense - a.total_Expense);
+        const leaderboard = await User.findAll({
+            attributes: ['id', 'name',  [sequelize.fn('COALESCE', sequelize.fn( 'sum', sequelize.col('amount')),0), 'total_Expense'],],
+            include: [
+                {
+                    model: Expense,
+                    attributes: []
+                }
+            ],
+            group: ['user.id'],
+            order: [['total_Expense', 'DESC']]
+        });       
 
         res.status(201).json(leaderboard);
     } catch (err) {
