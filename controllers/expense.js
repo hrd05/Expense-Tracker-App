@@ -1,6 +1,7 @@
 
 const path = require('path');
 const Expense = require('../models/expense');
+const User = require('../models/userSignup');
 const jwt = require('jsonwebtoken');
 
 exports.getExpenseForm = (req, res, next) => {
@@ -14,16 +15,28 @@ exports.postExpense = (req, res, next) => {
     console.log('in post expense')
     const token = req.header('Authorization');
     console.log(token);
+    // var totalExpense = 0;
+    // totalExpense = totalExpense+amount
+    //console.log(amount, totalExpense);
 
     const user = jwt.verify(token, 'd3ec4a17b9e89ca0527bba8eab6b546c3c75931f3c245a81503c81732d9d8ef4');
     const id = user.userId;
+    User.findOne({where: id})
+    .then((user) => {
+        let totalExpense = +user.totalExpense;
+        totalExpense += +amount;
+        console.log(totalExpense);
+        user.update({totalExpense: totalExpense});
+    }) 
 
     Expense.create({
         amount,
         category,
         description,
-        userId: id
+        userId: id,
     })
+
+  
     .then((expense) => {
         //console.log(expense);
         res.status(201).json(expense);
