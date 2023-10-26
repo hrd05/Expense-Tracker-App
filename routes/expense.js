@@ -7,9 +7,9 @@ const userAunthentication = require('../middleware/auth');
 
 router.get('/expense', expenseController.getExpenseForm);
 
-router.delete('/expense/addexpense/:id', expenseController.deleteExpense);
+router.delete('/expense/addexpense/:id',userAunthentication.authenticate,  expenseController.deleteExpense);
 
-router.post('/expense/addexpense', expenseController.postExpense);
+router.post('/expense/addexpense', userAunthentication.authenticate , expenseController.postExpense);
 
 router.get('/expense/addexpense',userAunthentication.authenticate ,   expenseController.getExpenses);
 

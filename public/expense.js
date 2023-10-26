@@ -42,10 +42,11 @@ function showExpense(expense) {
     //console.log(parentElement);
 
     delbtn.addEventListener('click', (event) => {
+        const token = localStorage.getItem('token');
          event.stopPropagation();
         const id = expense.id;
 
-        axios.delete(`http://localhost:3000/expense/addexpense/${id}`)
+        axios.delete(`http://localhost:3000/expense/addexpense/${id}`, {headers: {"Authorization": token}})
         .then((res) => {
             parentElement.removeChild(childElement);
         })
@@ -116,6 +117,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 function showLeaderboard() {
     const token = localStorage.getItem('token');
+    document.getElementById('title1').style.display = 'block';
     //console.log('in function');
     axios.get("http://localhost:3000/purchase/showleaderboard", {headers: {"Authorization": token}} )
     .then((leaderboard) => {
