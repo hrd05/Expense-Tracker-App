@@ -9,7 +9,7 @@
         integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <title>Expense Tracker</title>
     <style>
-        button:hover{
+        button:hover {
             cursor: pointer;
         }
     </style>
@@ -31,7 +31,8 @@
         </div>
     </header>
     <div class="container">
-        <form action="/expense/addexpense" method="POST" onsubmit="saveToDb(event)" id="addForm" class="form-check-input">
+        <form action="/expense/addexpense" method="POST" onsubmit="saveToDb(event)" id="addForm"
+            class="form-check-input">
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
@@ -62,18 +63,29 @@
                         <button type="submit" class="btn btn-primary">Add Expense</button>
                     </div>
                 </div>
-                <div class="col-md-2" >
+                <div class="col-md-2">
                     <div class="form-group">
-                        <button style="display: none;" id="rzp-btn1" type="button" class="btn btn-success" onclick="buyPremium()">Buy Premium</button>
+                        <button style="display: none;" id="rzp-btn1" type="button" class="btn btn-success"
+                            onclick="buyPremium()">Buy Premium</button>
+
+
                         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
                     </div>
                 </div>
                 <div class="col-md-2">
                     <div class="form-group">
-                        <button style="display: none;" id="slbtn2" type="button" class="btn btn-success" onclick="showLeaderboard()">Show Leaderboard</button>
-                        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+                        <button style="display: none;" id="slbtn2" type="button" class="btn btn-success"
+                            onclick="showLeaderboard()">Show Leaderboard</button>
                     </div>
                 </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <button id="downloadbtn" type="button" class="btn btn-success" onclick="download()">Download
+                            Expenses</button>
+                    </div>
+                </div>
+
+
 
             </div>
         </form>
@@ -86,21 +98,22 @@
             </div>
         </div>
     </div>
+
     <div class="container">
         <div class="row mt-4">
             <div class="col-md-12">
                 <h3 style="display: none;" id="title1">Leaderboard</h3>
                 <ul id="leaderboard" class="list-group">
-                    
+
                 </ul>
             </div>
         </div>
     </div>
-    
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"></script>
     <script src="/expense.js"></script>
-    
+
 </body>
 
 </html>
