@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const User = require('./models/userSignup');
 const Expense = require('./models/expense');
 const Order = require('./models/orders');
+const Forgotpassword = require('./models/forgotPass');
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
@@ -13,6 +14,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const userRoute = require('./routes/user');
 const expenseRoute = require('./routes/expense');
 const purchaseRoute = require('./routes/purchase');
+const resetRoute = require('./routes/reset');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -25,11 +27,16 @@ app.use(expenseRoute);
 
 app.use(purchaseRoute);
 
+app.use(resetRoute);
+
 User.hasMany(Expense);
 Expense.belongsTo(User);
 
 User.hasMany(Order);
 Order.belongsTo(User);
+
+User.hasMany(Forgotpassword);
+Forgotpassword.belongsTo(User);
 
 sequelize.sync()
 .then(() => {
