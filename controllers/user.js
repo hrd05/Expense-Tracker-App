@@ -4,7 +4,9 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/userSignup');
+const FilesDownloaded = require('../models/downloadhistory');
 const { where } = require('sequelize');
+const { response } = require('express');
 
 
 exports.getSignup = (req, res) => {
@@ -71,3 +73,30 @@ exports.postLogin = async (req, res) => {
         res.status(403).json({ message: 'something went wrong' });
     }
 };
+
+
+exports.postFileUrl = (req, res ) => {
+    const fileUrl = req.body.fileURL;
+    const userId = req.body.userId;
+    
+    // console.log(fileUrl, 'in post file url');
+    FilesDownloaded.create({
+        fileUrl,
+        userId
+    })
+    .then((response) => {
+        res.status(201).json(response);
+    })
+    .catch(err => {
+        console.log(err);
+    }) 
+    
+}
+
+exports.getDownloadHistory = (req, res) => {
+    FilesDownloaded.findAll({where: {userId: req.user.id}})
+    .then((response) => {
+        res.status(201).json(response);
+    })
+    .catch(err => console.log(err));
+}

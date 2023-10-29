@@ -4,10 +4,42 @@ const Expense = require('../models/expense');
 const User = require('../models/userSignup');
 const jwt = require('jsonwebtoken');
 const sequelize = require('../util/database');
+const S3Services = require('../services/S3services');
+
+
+const { response } = require('express');
+
 
 exports.getExpenseForm = (req, res, next) => {
     res.sendFile(path.join(__dirname, '../', 'views', 'Expense.html'));
 };
+
+
+
+
+exports.getDownload = async (req, res) => {
+
+    try {
+        const expenses = await req.user.getExpenses();
+        //upload to s3
+        //convert it to string uploading as a text file
+        const userId = req.user.id;
+        const stringifiedExpenses = JSON.stringify(expenses);
+        const fileName = `Expenses${userId}/${new Date()}.txt`;
+        const fileURL = await S3Services.uploadToS3(stringifiedExpenses, fileName);
+
+        // console.log(fileURL);
+        res.status(201).json({ fileURL, userId, success: true });
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ err: 'something went wrong' });
+    }
+
+
+
+}
+
 
 exports.postExpense = async (req, res, next) => {
     const amount = req.body.amount;
@@ -53,6 +85,7 @@ exports.postExpense = async (req, res, next) => {
 
 exports.getExpenses = (req, res) => {
     const user = req.user;
+    console.log(req.user.id, 'in get expense');
     // res.json(user);
     Expense.findAll({ where: { userId: req.user.id } })
         .then((expenses) => {
@@ -64,7 +97,7 @@ exports.getExpenses = (req, res) => {
 exports.deleteExpense = async (req, res, next) => {
     const id = req.params.id;
     const t = await sequelize.transaction();
-    
+
     const token = req.header('Authorization');
 
     Expense.findByPk(id)
@@ -75,7 +108,7 @@ exports.deleteExpense = async (req, res, next) => {
                 totalExpense: total_Expense
             },
                 {
-                    where: { id: req.user.id},
+                    where: { id: req.user.id },
                     transaction: t
 
                 })
@@ -83,7 +116,7 @@ exports.deleteExpense = async (req, res, next) => {
                     await t.commit()
                     return expense.destroy();
                 })
-                .catch(async(err) => {
+                .catch(async (err) => {
                     await t.rollback();
                     res.status(500).json(err);
                 })
@@ -94,4 +127,6 @@ exports.deleteExpense = async (req, res, next) => {
         })
         .catch(err => console.log(err));
 }
+
+
 

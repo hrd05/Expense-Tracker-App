@@ -12,6 +12,38 @@
         button:hover {
             cursor: pointer;
         }
+
+        table {
+            margin: 20px auto;
+            /* Center the table horizontally */
+            max-width: 100%;
+            /* Limit the table width to 80% of the container */
+            border-collapse: collapse;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tbody tr:nth-child(odd) {
+            background-color: #fff;
+        }
     </style>
 
 </head>
@@ -22,7 +54,11 @@
             <div class="col-md-6">
                 <h1 id="header-title">Expense Tracker</h1>
             </div>
+            <button id="downloadbtn" type="button" class="btn btn-link  btn-sm float-right"
+                onclick="download('myexpenses.text')">Download
+                Expenses</button>
         </div>
+
         <div class="col-md-6 text-right">
             <div id="premium-status" style="display: none;">
                 <!-- Here, you can dynamically display the premium user status -->
@@ -60,12 +96,12 @@
                 </div>
                 <div class="col-md-2">
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Add Expense</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Add Expense</button>
                     </div>
                 </div>
                 <div class="col-md-2">
                     <div class="form-group">
-                        <button style="display: none;" id="rzp-btn1" type="button" class="btn btn-success"
+                        <button style="display: none;" id="rzp-btn1" type="button" class="btn btn-success btn-sm"
                             onclick="buyPremium()">Buy Premium</button>
 
 
@@ -74,14 +110,16 @@
                 </div>
                 <div class="col-md-2">
                     <div class="form-group">
-                        <button style="display: none;" id="slbtn2" type="button" class="btn btn-success"
-                            onclick="showLeaderboard()">Show Leaderboard</button>
+                        <button style="display: none;" id="slbtn2" type="button" class="btn btn-primary mr-2 btn-sm"
+                            onclick="showLeaderboard()">Show
+                            Leaderboard</button>
                     </div>
                 </div>
                 <div class="col-md-2">
                     <div class="form-group">
-                        <button id="downloadbtn" type="button" class="btn btn-success" onclick="download()">Download
-                            Expenses</button>
+                        <button id="downloadhistory" type="button" class="btn btn-primary btn-sm ml-2"
+                            onclick="showDownloadHistory()">Show Download
+                            History</button>
                     </div>
                 </div>
 
@@ -109,6 +147,34 @@
             </div>
         </div>
     </div>
+
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <h3 style="display: none;" id="title1">Download History</h3>
+                <ul id="leaderboard" class="list-group">
+
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="table1" style="display: none;"> 
+        <div class="row mt-4">
+            <table>
+                <thead>
+                    <tr>
+                        <th>File URL</th>
+                        <th>Download Date</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body" >
+                    <!-- Table data will go here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"></script>

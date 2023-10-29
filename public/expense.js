@@ -1,5 +1,8 @@
 const leaderBtn = document.getElementById('slbtn2');
 const token = localStorage.getItem('token');
+const downbtn = document.getElementById('downloadbtn');
+const tableBody = document.getElementById('table-body');
+const table = document.getElementById('table1');
 
 function saveToDb(event) {
     event.preventDefault();
@@ -42,8 +45,7 @@ function showExpense(expense) {
     //console.log(parentElement);
 
     delbtn.addEventListener('click', (event) => {
-        const token = localStorage.getItem('token');
-         event.stopPropagation();
+         //event.stopPropagation();
         const id = expense.id;
 
         axios.delete(`http://localhost:3000/expense/addexpense/${id}`, {headers: {"Authorization": token}})
@@ -51,7 +53,7 @@ function showExpense(expense) {
             parentElement.removeChild(childElement);
         })
         .catch(err => console.log(err));
-    });
+    }); 
 
 }   
 
@@ -87,30 +89,47 @@ document.getElementById('rzp-btn1').onclick = async function(e) {
 };
 
     
-function download(){
+function download(filename){
     console.log('in download');
     axios.get('http://localhost:3000/user/download', { headers: {"Authorization" : token} })
     .then((response) => {
         if(response.status === 201){
+            console.log(response.data)
+            const fileURL = response.data.fileURL;
+            const userId = response.data.userId;
             //the bcakend is essentially sending a download link
             //  which if we open in browser, the file would download
             var a = document.createElement("a");
-            a.href = response.data.fileUrl;
-            a.download = 'myexpense.csv';
+            a.href = response.data.fileURL;
+            a.download = filename;
             a.click();
+            saveFileToDb(fileURL, userId);
+            //console.log('download done');
         } else {
             throw new Error(response.data.message)
         }
 
     })
     .catch((err) => {
-        showError(err)
+        console.log(err);
     });
 }
 
 
+
+function saveFileToDb(fileURL, userId) {
+    const downloadHistory = {
+        fileURL,
+        userId
+    }
+    axios.post("http://localhost:3000/user/download", downloadHistory)
+    .then((response) => {
+        //console.log('ll');
+        console.log(response);
+    })
+}
+
 window.addEventListener("DOMContentLoaded", () => {
-    const token = localStorage.getItem('token');
     axios.get("http://localhost:3000/expense/addexpense", {headers: {"Authorization": token}})
     .then((response) => {
         //console.log(response.data)
@@ -118,7 +137,8 @@ window.addEventListener("DOMContentLoaded", () => {
         const isPremium = response.data.user.isPremiumUser
         if(isPremium){
             btn = document.getElementById('rzp-btn1');
-            btn.style.display = 'none';
+            downbtn.removeAttribute('disabled');
+            downbtn.style.display = 'block'
             document.getElementById('premium-status').style.display = 'block';
             leaderBtn.style.display = 'block';
 
@@ -156,4 +176,33 @@ function showTotalAmount(leaderboard) {
 
     childElement.textContent = `Name: ${leaderboard.name} , Total expenses: Rs ${leaderboard.total_Expense}`
     parentElement.appendChild(childElement);
+}
+
+function showDownloadHistory() {
+    table1.style.display = 'block';
+    axios.get("http://localhost:3000/user/downloadhistory", { headers: {"Authorization" : token} } )
+    .then((response) => {
+        for(var i=0;i<response.data.length; i++){
+            showdownloadDetails(response.data[i]);
+        }
+
+    })
+    .catch(err => console.log(err));
+
+}
+
+function showdownloadDetails(downloadhistory){
+    const row = document.createElement('tr');
+
+    const fileUrlCell = document.createElement('td');
+    fileUrlCell.innerHTML = `<a href=${downloadhistory.fileUrl}>myexpense/${downloadhistory.createdAt}</a>`;
+
+    const date = document.createElement('td');
+    date.textContent = downloadhistory.createdAt;
+
+    row.appendChild(fileUrlCell);
+    row.appendChild(date);
+
+    tableBody.appendChild(row);
+
 }
