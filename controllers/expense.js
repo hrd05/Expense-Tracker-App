@@ -83,15 +83,47 @@ exports.postExpense = async (req, res, next) => {
 
 }
 
+const EXPENSES_PER_PAGE = 5;
+
 exports.getExpenses = (req, res) => {
-    const user = req.user;
-    console.log(req.user.id, 'in get expense');
-    // res.json(user);
-    Expense.findAll({ where: { userId: req.user.id } })
-        .then((expenses) => {
-            res.status(201).json({ expenses, user });
+    const page = Number(req.query.page);
+    let totalExpenses;
+
+    Expense.count({where: {userId: req.user.id}})
+    .then((total) => {
+        totalExpenses = total
+        //console.log(totalExpenses, 'total expense')
+        return Expense.findAll({
+            where: {userId: req.user.id},
+            offset: (page-1) * (EXPENSES_PER_PAGE),
+            limit: EXPENSES_PER_PAGE
         })
-        .catch(err => console.log(err));
+    })
+    .then((expenses) => {
+        //console.log(expenses);
+        res.json({
+            expenses: expenses,
+            currentPage: page,
+            hasNextPage: totalExpenses - (page * EXPENSES_PER_PAGE) > 0,
+            nextPage: Number(page) + 1,
+            hasPreviousPage: page > 1,
+            previousPage: Number(page) - 1,
+            lastPage: Math.ceil(totalExpenses / EXPENSES_PER_PAGE),
+            user: req.user
+        })
+    })
+    .catch(err => {
+        res.status(500).json('sonething went wrong')
+    })
+    
+    // const user = req.user;
+    // console.log(req.user.id, 'in get expense');
+    // // res.json(user);
+    // Expense.findAll({ where: { userId: req.user.id } })
+    //     .then((expenses) => {
+    //         res.status(201).json({ expenses, user });
+    //     })
+    //     .catch(err => console.log(err));
 }
 
 exports.deleteExpense = async (req, res, next) => {

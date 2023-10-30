@@ -1,8 +1,11 @@
+
+
 const leaderBtn = document.getElementById('slbtn2');
 const token = localStorage.getItem('token');
 const downbtn = document.getElementById('downloadbtn');
 const tableBody = document.getElementById('table-body');
 const table = document.getElementById('table1');
+const pagination = document.getElementById('pagination');
 
 function saveToDb(event) {
     event.preventDefault();
@@ -11,20 +14,20 @@ function saveToDb(event) {
     const amount = event.target.amount.value;
     const category = event.target.category.value;
     const description = event.target.description.value;
-    
+
     expenseDetail = {
         amount,
         category,
         description
     };
-    
+
     //console.log(userDetail);
-    axios.post("http://localhost:3000/expense/addexpense", expenseDetail, {headers: {"Authorization": token}})
-    .then((expense) => {
-        form.reset();
-        showExpense(expense.data);
-    })
-    .catch(err => console.log(err));
+    axios.post("http://localhost:3000/expense/addexpense", expenseDetail, { headers: { "Authorization": token } })
+        .then((expense) => {
+            form.reset();
+            showExpense(expense.data);
+        })
+        .catch(err => console.log(err));
 };
 
 function showExpense(expense) {
@@ -45,34 +48,34 @@ function showExpense(expense) {
     //console.log(parentElement);
 
     delbtn.addEventListener('click', (event) => {
-         //event.stopPropagation();
+        //event.stopPropagation();
         const id = expense.id;
 
-        axios.delete(`http://localhost:3000/expense/addexpense/${id}`, {headers: {"Authorization": token}})
-        .then((res) => {
-            parentElement.removeChild(childElement);
-        })
-        .catch(err => console.log(err));
-    }); 
+        axios.delete(`http://localhost:3000/expense/addexpense/${id}`, { headers: { "Authorization": token } })
+            .then((res) => {
+                parentElement.removeChild(childElement);
+            })
+            .catch(err => console.log(err));
+    });
 
-}   
+}
 
 
-document.getElementById('rzp-btn1').onclick = async function(e) {
-    
-    const response = await axios.get("http://localhost:3000/purchase/premiummembership", {headers: {"Authorization": token}})
+document.getElementById('rzp-btn1').onclick = async function (e) {
+
+    const response = await axios.get("http://localhost:3000/purchase/premiummembership", { headers: { "Authorization": token } })
     //console.log(response)
 
     var options = {
         "key": response.data.key_id,
         "order_id": response.data.order.id,
         // handler hanldes the success payment
-        "handler": async function(response) {
+        "handler": async function (response) {
             console.log(response);
             await axios.post("http://localhost:3000/purchase/updatetransactionstatus", {
                 order_id: options.order_id,
-                payment_id: response.razorpay_payment_id 
-            }, {headers: {"Authorization": token}})
+                payment_id: response.razorpay_payment_id
+            }, { headers: { "Authorization": token } })
             alert('You are a premium user now')
             window.location.href = "/expense";
 
@@ -82,37 +85,37 @@ document.getElementById('rzp-btn1').onclick = async function(e) {
     const rzp1 = new Razorpay(options)
     rzp1.open();
     e.preventDefault()
-    rzp1.on('payment.failed', function(response){
+    rzp1.on('payment.failed', function (response) {
         console.log(response);
         alert('Something went wrong');
     });
 };
 
-    
-function download(filename){
-    console.log('in download');
-    axios.get('http://localhost:3000/user/download', { headers: {"Authorization" : token} })
-    .then((response) => {
-        if(response.status === 201){
-            console.log(response.data)
-            const fileURL = response.data.fileURL;
-            const userId = response.data.userId;
-            //the bcakend is essentially sending a download link
-            //  which if we open in browser, the file would download
-            var a = document.createElement("a");
-            a.href = response.data.fileURL;
-            a.download = filename;
-            a.click();
-            saveFileToDb(fileURL, userId);
-            //console.log('download done');
-        } else {
-            throw new Error(response.data.message)
-        }
 
-    })
-    .catch((err) => {
-        console.log(err);
-    });
+function download(filename) {
+    console.log('in download');
+    axios.get('http://localhost:3000/user/download', { headers: { "Authorization": token } })
+        .then((response) => {
+            if (response.status === 201) {
+                console.log(response.data)
+                const fileURL = response.data.fileURL;
+                const userId = response.data.userId;
+                //the bcakend is essentially sending a download link
+                //  which if we open in browser, the file would download
+                var a = document.createElement("a");
+                a.href = response.data.fileURL;
+                a.download = filename;
+                a.click();
+                saveFileToDb(fileURL, userId);
+                //console.log('download done');
+            } else {
+                throw new Error(response.data.message)
+            }
+
+        })
+        .catch((err) => {
+            console.log(err);
+        });
 }
 
 
@@ -123,50 +126,104 @@ function saveFileToDb(fileURL, userId) {
         userId
     }
     axios.post("http://localhost:3000/user/download", downloadHistory)
-    .then((response) => {
-        //console.log('ll');
-        console.log(response);
-    })
+        .then((response) => {
+            //console.log('ll');
+            console.log(response);
+        })
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-    axios.get("http://localhost:3000/expense/addexpense", {headers: {"Authorization": token}})
-    .then((response) => {
-        //console.log(response.data)
-        //console.log(response.data.expenses[0]);
-        const isPremium = response.data.user.isPremiumUser
-        if(isPremium){
-            btn = document.getElementById('rzp-btn1');
-            downbtn.removeAttribute('disabled');
-            downbtn.style.display = 'block'
-            document.getElementById('premium-status').style.display = 'block';
-            leaderBtn.style.display = 'block';
-
-        }else{
-            btn = document.getElementById('rzp-btn1');
-            btn.style.display = 'block';
-        }
-        
-        for(var i=0; i<response.data.expenses.length; i++ ){
-            showExpense(response.data.expenses[i]);
-        }
-    } )
-    .catch(err => console.log(err));
+    const page = 1;
+    axios.get(`http://localhost:3000/expenses?page=${page}`, { headers: { "Authorization": token } })
+        .then((res) => {
+             const isPremium = res.data.user.isPremiumUser
+             checkPremium(isPremium);
+            console.log(res);
+            for(var i =0; i< res.data.expenses.length; i++) {
+                showExpense(res.data.expenses[i]);
+            }
+            showPagination(res.data);
+        })
+        .catch(err => console.log(err));
 });
 
+function showPagination({
+    currentPage,
+    hasNextPage,
+    nextPage,
+    hasPreviousPage,
+    previousPage,
+    lastPage
+}){
+    pagination.innerHTML = '';
+
+    if(hasPreviousPage){
+        const btn2 = document.createElement('button');
+        btn2.innerHTML = previousPage;
+        btn2.setAttribute('type', 'button');
+        btn2.addEventListener('click', getExpenses(previousPage))
+        pagination.appendChild(btn2)
+    }
+
+    const btn1 = document.createElement('button');
+    btn1.innerHTML = currentPage;
+    btn1.setAttribute('type', 'button');
+    btn1.addEventListener('click', () => getExpenses(currentPage))
+    pagination.appendChild(btn1);
+
+    if(hasNextPage){
+        const btn3 = document.createElement('button');
+        btn3.innerHTML = nextPage;
+        btn3.setAttribute('type', 'button');
+        btn3.addEventListener('click',  () => getExpenses(nextPage));
+        pagination.appendChild(btn3);
+    }
+
+    
+
+}
+
+function getExpenses(page) {
+    document.getElementById('items').innerHTML = "";
+    console.log('in this page', page)
+
+    axios.get(`http://localhost:3000/expenses?page=${page}`, { headers: { "Authorization": token } })
+    .then((res) => {
+        console.log(res);
+        for(var i =0; i< res.data.expenses.length; i++) {
+            showExpense(res.data.expenses[i]);
+        }
+        showPagination(res.data);
+    })
+    .catch(err => console.log(err));
+}
+
+function checkPremium(isPremium) {
+    if (isPremium) {
+        btn = document.getElementById('rzp-btn1');
+        downbtn.removeAttribute('disabled');
+        downbtn.style.display = 'block'
+        document.getElementById('premium-status').style.display = 'block';
+        leaderBtn.style.display = 'block';
+
+    } else {
+        btn = document.getElementById('rzp-btn1');
+        btn.style.display = 'block';
+    }
+}
 
 function showLeaderboard() {
     const token = localStorage.getItem('token');
     document.getElementById('title1').style.display = 'block';
     //console.log('in function');
-    axios.get("http://localhost:3000/purchase/showleaderboard", {headers: {"Authorization": token}} )
-    .then((leaderboard) => {
-        console.log(leaderboard.data);
-        for(var i=0;i<leaderboard.data.length;i++){
-            showTotalAmount(leaderboard.data[i]);
-        }
-    })
-    .catch(err => console.log(err));
+    axios.get("http://localhost:3000/purchase/showleaderboard", { headers: { "Authorization": token } })
+        .then((leaderboard) => {
+            console.log(leaderboard.data);
+            for (var i = 0; i < leaderboard.data.length; i++) {
+                showTotalAmount(leaderboard.data[i]);
+            }
+        })
+        .catch(err => console.log(err));
 }
 
 function showTotalAmount(leaderboard) {
@@ -180,18 +237,18 @@ function showTotalAmount(leaderboard) {
 
 function showDownloadHistory() {
     table1.style.display = 'block';
-    axios.get("http://localhost:3000/user/downloadhistory", { headers: {"Authorization" : token} } )
-    .then((response) => {
-        for(var i=0;i<response.data.length; i++){
-            showdownloadDetails(response.data[i]);
-        }
+    axios.get("http://localhost:3000/user/downloadhistory", { headers: { "Authorization": token } })
+        .then((response) => {
+            for (var i = 0; i < response.data.length; i++) {
+                showdownloadDetails(response.data[i]);
+            }
 
-    })
-    .catch(err => console.log(err));
+        })
+        .catch(err => console.log(err));
 
 }
 
-function showdownloadDetails(downloadhistory){
+function showdownloadDetails(downloadhistory) {
     const row = document.createElement('tr');
 
     const fileUrlCell = document.createElement('td');
