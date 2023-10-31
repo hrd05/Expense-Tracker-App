@@ -26,7 +26,6 @@ function saveToDb(event) {
     axios.post("http://localhost:3000/expense/addexpense", expenseDetail, { headers: { "Authorization": token } })
         .then((expense) => {
             form.reset();
-            console.log(expense.data)
             showExpense(expense.data);
            
         })
@@ -77,7 +76,7 @@ document.getElementById('rzp-btn1').onclick = async function (e) {
         "order_id": response.data.order.id,
         // handler hanldes the success payment
         "handler": async function (response) {
-            console.log(response);
+
             await axios.post("http://localhost:3000/purchase/updatetransactionstatus", {
                 order_id: options.order_id,
                 payment_id: response.razorpay_payment_id
@@ -92,18 +91,16 @@ document.getElementById('rzp-btn1').onclick = async function (e) {
     rzp1.open();
     e.preventDefault()
     rzp1.on('payment.failed', function (response) {
-        console.log(response);
         alert('Something went wrong');
     });
 };
 
 
 function download(filename) {
-    console.log('in download');
     axios.get('http://localhost:3000/user/download', { headers: { "Authorization": token } })
         .then((response) => {
             if (response.status === 201) {
-                console.log(response.data)
+               
                 const fileURL = response.data.fileURL;
                 const userId = response.data.userId;
                 //the bcakend is essentially sending a download link
@@ -226,7 +223,7 @@ function showLeaderboard() {
     //console.log('in function');
     axios.get("http://localhost:3000/purchase/showleaderboard", { headers: { "Authorization": token } })
         .then((leaderboard) => {
-            console.log(leaderboard.data);
+            // console.log(leaderboard.data);
             for (var i = 0; i < leaderboard.data.length; i++) {
                 showTotalAmount(leaderboard.data[i]);
             }

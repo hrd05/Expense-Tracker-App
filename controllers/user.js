@@ -85,7 +85,7 @@ exports.postFileUrl = (req, res ) => {
         userId
     })
     .then((response) => {
-        res.status(201).json(response);
+        res.status(201).json({seccess: true});
     })
     .catch(err => {
         console.log(err);
