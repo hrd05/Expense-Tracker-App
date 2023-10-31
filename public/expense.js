@@ -30,33 +30,35 @@ function saveToDb(event) {
         .catch(err => console.log(err));
 };
 
-function showExpense(expense) {
-    const parentElement = document.getElementById('items');
+function showExpense(expenses) {
+    document.getElementById('items').innerHTML = "";
 
-    const childElement = document.createElement('li');
-    childElement.className = 'list-group-item';
-    //childElement.appendChild(document.createTextNode(`Amount-${expense.amount} ; Category-${expense.category} ; Description:${expense.description}`));
-    childElement.innerHTML = `Amount: <b>Rs ${expense.amount}</b>  ; Category: <b>${expense.category}</b> ; Description: <b>${expense.description}</b>`;
-    const delbtn = document.createElement('button');
-    delbtn.textContent = "DELETE";
-    delbtn.className = 'btn btn-danger btn-sm float-right';
+    expenses.forEach((expense) => {
+        const parentElement = document.getElementById('items');
 
-    childElement.appendChild(delbtn);
-    //console.log(childElement);
+        const childElement = document.createElement('li');
+        childElement.className = 'list-group-item';
+        //childElement.appendChild(document.createTextNode(`Amount-${expense.amount} ; Category-${expense.category} ; Description:${expense.description}`));
+        childElement.innerHTML = `Amount: <b>Rs ${expense.amount}</b>  ; Category: <b>${expense.category}</b> ; Description: <b>${expense.description}</b>`;
+        const delbtn = document.createElement('button');
+        delbtn.textContent = "DELETE";
+        delbtn.className = 'btn btn-danger btn-sm float-right';
 
-    parentElement.appendChild(childElement);
-    //console.log(parentElement);
+        childElement.appendChild(delbtn);
 
-    delbtn.addEventListener('click', (event) => {
-        //event.stopPropagation();
-        const id = expense.id;
+        parentElement.appendChild(childElement);
+        delbtn.addEventListener('click', (event) => {
+            //event.stopPropagation();
+            const id = expense.id;
 
-        axios.delete(`http://localhost:3000/expense/addexpense/${id}`, { headers: { "Authorization": token } })
-            .then((res) => {
-                parentElement.removeChild(childElement);
-            })
-            .catch(err => console.log(err));
-    });
+            axios.delete(`http://localhost:3000/expense/addexpense/${id}`, { headers: { "Authorization": token } })
+                .then((res) => {
+                    parentElement.removeChild(childElement);
+                })
+                .catch(err => console.log(err));
+        });
+
+    })
 
 }
 
@@ -133,15 +135,14 @@ function saveFileToDb(fileURL, userId) {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+    console.log('dom loaded');
     const page = 1;
     axios.get(`http://localhost:3000/expenses?page=${page}`, { headers: { "Authorization": token } })
         .then((res) => {
-             const isPremium = res.data.user.isPremiumUser
-             checkPremium(isPremium);
+            const isPremium = res.data.user.isPremiumUser
+            checkPremium(isPremium);
             console.log(res);
-            for(var i =0; i< res.data.expenses.length; i++) {
-                showExpense(res.data.expenses[i]);
-            }
+            showExpense(res.data.expenses);
             showPagination(res.data);
         })
         .catch(err => console.log(err));
@@ -154,14 +155,14 @@ function showPagination({
     hasPreviousPage,
     previousPage,
     lastPage
-}){
+}) {
     pagination.innerHTML = '';
 
-    if(hasPreviousPage){
+    if (hasPreviousPage) {
         const btn2 = document.createElement('button');
         btn2.innerHTML = previousPage;
         btn2.setAttribute('type', 'button');
-        btn2.addEventListener('click', getExpenses(previousPage))
+        btn2.addEventListener('click', () => getExpenses(previousPage))
         pagination.appendChild(btn2)
     }
 
@@ -171,31 +172,27 @@ function showPagination({
     btn1.addEventListener('click', () => getExpenses(currentPage))
     pagination.appendChild(btn1);
 
-    if(hasNextPage){
+    if (hasNextPage) {
         const btn3 = document.createElement('button');
         btn3.innerHTML = nextPage;
         btn3.setAttribute('type', 'button');
-        btn3.addEventListener('click',  () => getExpenses(nextPage));
+        btn3.addEventListener('click', () => getExpenses(nextPage));
         pagination.appendChild(btn3);
     }
-
-    
-
 }
 
 function getExpenses(page) {
-    document.getElementById('items').innerHTML = "";
+
     console.log('in this page', page)
 
     axios.get(`http://localhost:3000/expenses?page=${page}`, { headers: { "Authorization": token } })
-    .then((res) => {
-        console.log(res);
-        for(var i =0; i< res.data.expenses.length; i++) {
-            showExpense(res.data.expenses[i]);
-        }
-        showPagination(res.data);
-    })
-    .catch(err => console.log(err));
+        .then((res) => {
+            console.log(res);
+            showExpense(res.data.expenses);
+
+            showPagination(res.data);
+        })
+        .catch(err => console.log(err));
 }
 
 function checkPremium(isPremium) {

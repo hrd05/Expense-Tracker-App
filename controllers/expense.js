@@ -83,7 +83,7 @@ exports.postExpense = async (req, res, next) => {
 
 }
 
-const EXPENSES_PER_PAGE = 5;
+const EXPENSES_PER_PAGE = 4 ;
 
 exports.getExpenses = (req, res) => {
     const page = Number(req.query.page);
