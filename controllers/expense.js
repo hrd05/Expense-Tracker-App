@@ -69,7 +69,7 @@ exports.postExpense = async (req, res, next) => {
             })
                 .then(async () => {
                     await t.commit();
-                    res.status(201).json(expense);
+                    res.status(201).json([expense]);
                 })
                 .catch(async (err) => {
                     await t.rollback();
@@ -83,9 +83,11 @@ exports.postExpense = async (req, res, next) => {
 
 }
 
-const EXPENSES_PER_PAGE = 4 ;
+
 
 exports.getExpenses = (req, res) => {
+    const EXPENSES_PER_PAGE = Number(req.query.pageSize);
+    console.log(EXPENSES_PER_PAGE);
     const page = Number(req.query.page);
     let totalExpenses;
 
@@ -113,6 +115,7 @@ exports.getExpenses = (req, res) => {
         })
     })
     .catch(err => {
+        console.log(err);
         res.status(500).json('sonething went wrong')
     })
     
