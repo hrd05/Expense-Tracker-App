@@ -2,6 +2,7 @@ const express = require('express');
 const Sequelize = require('sequelize');
 const path = require('path');
 const bodyParser = require('body-parser');
+const helmet =require('helmet');
 
 const User = require('./models/userSignup');
 const Expense = require('./models/expense');
@@ -16,6 +17,8 @@ const userRoute = require('./routes/user');
 const expenseRoute = require('./routes/expense');
 const purchaseRoute = require('./routes/purchase');
 const resetRoute = require('./routes/reset');
+
+app.use(helmet());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
