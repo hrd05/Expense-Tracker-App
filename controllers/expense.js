@@ -86,8 +86,8 @@ exports.postExpense = async (req, res, next) => {
 
 
 exports.getExpenses = (req, res) => {
-    const EXPENSES_PER_PAGE = Number(req.query.pageSize);
-    console.log(EXPENSES_PER_PAGE);
+    const EXPENSES_PER_PAGE = Number(req.query.pageSize) || 5;
+    console.log(EXPENSES_PER_PAGE, 'in get exp');
     const page = Number(req.query.page);
     let totalExpenses;
 
@@ -118,15 +118,7 @@ exports.getExpenses = (req, res) => {
         console.log(err);
         res.status(500).json('sonething went wrong')
     })
-    
-    // const user = req.user;
-    // console.log(req.user.id, 'in get expense');
-    // // res.json(user);
-    // Expense.findAll({ where: { userId: req.user.id } })
-    //     .then((expenses) => {
-    //         res.status(201).json({ expenses, user });
-    //     })
-    //     .catch(err => console.log(err));
+
 }
 
 exports.deleteExpense = async (req, res, next) => {

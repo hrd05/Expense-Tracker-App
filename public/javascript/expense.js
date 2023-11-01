@@ -194,7 +194,8 @@ function showPagination({
 
 function getExpenses(page) {
 
-    axios.get(`http://localhost:3000/expenses?page=${page}`, { headers: { "Authorization": token } })
+    const pageSize = localStorage.getItem('expensesPerPage');
+    axios.get(`http://localhost:3000/expenses?page=${page}&pageSize=${pageSize}`, { headers: { "Authorization": token } })
         .then((res) => {
 
             showExpense(res.data.expenses);
