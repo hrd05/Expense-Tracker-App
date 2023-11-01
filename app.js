@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const morgan = require('morgan');
 
-
+const sequelize = require('./util/database');
 const User = require('./models/userSignup');
 const Expense = require('./models/expense');
 const Order = require('./models/orders');
@@ -31,7 +31,7 @@ app.use(morgan('combined', {stream: accessLogStream}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const sequelize = require('./util/database');
+
 
 app.use(userRoute);
 
