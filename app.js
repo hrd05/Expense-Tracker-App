@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const Sequelize = require('sequelize');
 const path = require('path');
+var cors = require('cors');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -16,6 +17,7 @@ require('dotenv').config();
 
 const app = express();
 
+app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const userRoute = require('./routes/user');

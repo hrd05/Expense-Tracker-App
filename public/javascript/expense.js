@@ -23,7 +23,7 @@ function saveToDb(event) {
     };
 
     //console.log(userDetail);
-    axios.post("http://localhost:3000/expense/addexpense", expenseDetail, { headers: { "Authorization": token } })
+    axios.post("http://16.171.47.193:3000/expense/addexpense", expenseDetail, { headers: { "Authorization": token } })
         .then((expense) => {
             form.reset();
             showExpense(expense.data);
@@ -54,7 +54,7 @@ function showExpense(expenses) {
             //event.stopPropagation();
             const id = expense.id;
 
-            axios.delete(`http://localhost:3000/expense/addexpense/${id}`, { headers: { "Authorization": token } })
+            axios.delete(`http://16.171.47.193:3000/expense/addexpense/${id}`, { headers: { "Authorization": token } })
                 .then((res) => {
                     parentElement.removeChild(childElement);
                 })
@@ -68,7 +68,7 @@ function showExpense(expenses) {
 
 document.getElementById('rzp-btn1').onclick = async function (e) {
 
-    const response = await axios.get("http://localhost:3000/purchase/premiummembership", { headers: { "Authorization": token } })
+    const response = await axios.get("http://16.171.47.193:3000/purchase/premiummembership", { headers: { "Authorization": token } })
     //console.log(response)
 
     var options = {
@@ -77,7 +77,7 @@ document.getElementById('rzp-btn1').onclick = async function (e) {
         // handler hanldes the success payment
         "handler": async function (response) {
 
-            await axios.post("http://localhost:3000/purchase/updatetransactionstatus", {
+            await axios.post("http://16.171.47.193:3000/purchase/updatetransactionstatus", {
                 order_id: options.order_id,
                 payment_id: response.razorpay_payment_id
             }, { headers: { "Authorization": token } })
@@ -97,7 +97,7 @@ document.getElementById('rzp-btn1').onclick = async function (e) {
 
 
 function download(filename) {
-    axios.get('http://localhost:3000/user/download', { headers: { "Authorization": token } })
+    axios.get('http://16.171.47.193:3000/user/download', { headers: { "Authorization": token } })
         .then((response) => {
             if (response.status === 201) {
                
@@ -128,7 +128,7 @@ function saveFileToDb(fileURL, userId) {
         fileURL,
         userId
     }
-    axios.post("http://localhost:3000/user/download", downloadHistory)
+    axios.post("http://16.171.47.193:3000/user/download", downloadHistory)
         .then((response) => {
             //console.log('ll');
             console.log(response);
@@ -148,7 +148,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const pageSize = localStorage.getItem('expensesPerPage');
     selectElement.value = pageSize
     const page = 1;
-    axios.get(`http://localhost:3000/expenses?page=${page}&pageSize=${pageSize}`, { headers: { "Authorization": token } })
+    axios.get(`http://16.171.47.193:3000/expenses?page=${page}&pageSize=${pageSize}`, { headers: { "Authorization": token } })
         .then((res) => {
             const isPremium = res.data.user.isPremiumUser
             checkPremium(isPremium);
@@ -195,7 +195,7 @@ function showPagination({
 function getExpenses(page) {
 
     const pageSize = localStorage.getItem('expensesPerPage');
-    axios.get(`http://localhost:3000/expenses?page=${page}&pageSize=${pageSize}`, { headers: { "Authorization": token } })
+    axios.get(`http://16.171.47.193:3000/expenses?page=${page}&pageSize=${pageSize}`, { headers: { "Authorization": token } })
         .then((res) => {
 
             showExpense(res.data.expenses);
@@ -222,7 +222,7 @@ function showLeaderboard() {
     const token = localStorage.getItem('token');
     document.getElementById('title1').style.display = 'block';
     //console.log('in function');
-    axios.get("http://localhost:3000/purchase/showleaderboard", { headers: { "Authorization": token } })
+    axios.get("http://16.171.47.193:3000/purchase/showleaderboard", { headers: { "Authorization": token } })
         .then((leaderboard) => {
             // console.log(leaderboard.data);
             for (var i = 0; i < leaderboard.data.length; i++) {
@@ -243,7 +243,7 @@ function showTotalAmount(leaderboard) {
 
 function showDownloadHistory() {
     table1.style.display = 'block';
-    axios.get("http://localhost:3000/user/downloadhistory", { headers: { "Authorization": token } })
+    axios.get("http://16.171.47.193:3000/user/downloadhistory", { headers: { "Authorization": token } })
         .then((response) => {
             for (var i = 0; i < response.data.length; i++) {
                 showdownloadDetails(response.data[i]);

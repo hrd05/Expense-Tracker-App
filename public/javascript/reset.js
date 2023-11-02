@@ -8,7 +8,7 @@ function sendLoginLinkHandler(e) {
     //console.log(email);
    
 
-    axios.post("http://localhost:3000/password/forgotpassword", {email} )
+    axios.post("http://16.171.47.193:3000/password/forgotpassword", {email} )
     .then((response) => {
         //console.log(response);
         if(response.status === 200){

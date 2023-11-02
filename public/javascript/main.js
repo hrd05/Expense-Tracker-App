@@ -4,7 +4,7 @@ function loginHandler(event) {
     const email = event.target.email.value;
     const password = event.target.password.value;
 
-    axios.post("http://localhost:3000/user/login", {email, password})
+    axios.post("http://16.171.47.193:3000/user/login", {email, password})
     .then((res) => {
         if(res.status === 200) {
             alert(res.data.message);
