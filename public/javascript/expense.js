@@ -26,15 +26,37 @@ function saveToDb(event) {
     axios.post("http://16.171.47.193:3000/expense/addexpense", expenseDetail, { headers: { "Authorization": token } })
         .then((expense) => {
             form.reset();
-            showExpense(expense.data);
-           
+            const parentElement = document.getElementById('items');
+
+            const childElement = document.createElement('li');
+            childElement.className = 'list-group-item';
+            //childElement.appendChild(document.createTextNode(`Amount-${expense.amount} ; Category-${expense.category} ; Description:${expense.description}`));
+            childElement.innerHTML = `Amount: <b>Rs ${expense.amount}</b>  ; Category: <b>${expense.category}</b> ; Description: <b>${expense.description}</b>`;
+            const delbtn = document.createElement('button');
+            delbtn.textContent = "DELETE";
+            delbtn.className = 'btn btn-danger btn-sm float-right';
+
+            childElement.appendChild(delbtn);
+
+            parentElement.appendChild(childElement);
+            delbtn.addEventListener('click', (event) => {
+                //event.stopPropagation();
+                const id = expense.id;
+
+                axios.delete(`http://16.171.47.193:3000/expense/addexpense/${id}`, { headers: { "Authorization": token } })
+                    .then((res) => {
+                        parentElement.removeChild(childElement);
+                    })
+                    .catch(err => console.log(err));
+            });
+
         })
         .catch(err => console.log(err));
 };
 
 function showExpense(expenses) {
     document.getElementById('items').innerHTML = "";
-    
+
 
     expenses.forEach((expense) => {
         const parentElement = document.getElementById('items');
@@ -100,7 +122,7 @@ function download(filename) {
     axios.get('http://16.171.47.193:3000/user/download', { headers: { "Authorization": token } })
         .then((response) => {
             if (response.status === 201) {
-               
+
                 const fileURL = response.data.fileURL;
                 const userId = response.data.userId;
                 //the bcakend is essentially sending a download link
@@ -136,12 +158,12 @@ function saveFileToDb(fileURL, userId) {
 }
 
 function setExpensesPerPage() {
-    
+
     const selectedValue = selectElement.value;
 
-    localStorage.setItem('expensesPerPage',  selectedValue);
+    localStorage.setItem('expensesPerPage', selectedValue);
     location.reload();
-    
+
 }
 
 window.addEventListener("DOMContentLoaded", () => {
