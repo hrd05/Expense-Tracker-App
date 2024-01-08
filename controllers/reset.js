@@ -37,7 +37,7 @@ const forgotpassword = async (req, res) => {
                 to: email,
                 subject: 'Password Reset',
                 text: 'HI this is just a dummy mail for testing',
-                html: `<a href="http://localhost:3000/password/resetpassword/${id}">Reset password</a>`,
+                html: `<a href="/password/resetpassword/${id}">Reset password</a>`,
             };
 
             // Send the email using nodemailer

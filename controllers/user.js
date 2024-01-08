@@ -4,8 +4,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/userSignup');
-const FilesDownloaded = require('../models/downloadhistory');
-const { where } = require('sequelize');
+const DownloadHistory = require('../models/downloadhistory');
+// const { where } = require('sequelize');
 const { response } = require('express');
 
 
@@ -14,14 +14,12 @@ exports.getSignup = (req, res) => {
 };
 
 exports.postSignup = (req, res) => {
-    const name = req.body.name;
-    const email = req.body.email;
-    const password = req.body.password;
+    const { name, email, password } = req.body;
 
-    User.findOne({ where: { email } })
+    User.findOne({ email: email })
         .then((user) => {
             if (user) {
-                res.status(409).end();
+                return res.status(409).json({ message: 'user with same email aleady exists' });
             }
             else {
                 return;
@@ -29,11 +27,10 @@ exports.postSignup = (req, res) => {
         })
 
     bcrypt.hash(password, 10, (err, hash) => {
-        console.log(err);
+        // console.log(err);
         User.create({ name, email, password: hash })
-            .then(() => {
+            .then((user) => {
                 res.redirect('/login');
-
             })
             .catch(err => console.log(err));
     })
@@ -55,15 +52,15 @@ exports.postLogin = async (req, res) => {
     const password = req.body.password;
 
     try {
-        const user = await User.findOne({ where: { email } })
+        const user = await User.findOne({ email: email })
         if (!user) {
-            res.status(404).json({ message: 'user not found' });
+            return res.status(404).json({ message: 'user not found' });
         }
 
         const result = await bcrypt.compare(password, user.password)
 
         if (result) {
-            res.status(200).json({ message: 'User logged succesfully', token: generateAccessToken(user.id) , user});
+            res.status(200).json({ message: 'User logged succesfully', token: generateAccessToken(user.id), user });
         }
         else {
             res.status(401).json({ message: 'incorrect password' });
@@ -75,28 +72,25 @@ exports.postLogin = async (req, res) => {
 };
 
 
-exports.postFileUrl = (req, res ) => {
+exports.postFileUrl = (req, res) => {
     const fileUrl = req.body.fileURL;
     const userId = req.body.userId;
-    
+
     // console.log(fileUrl, 'in post file url');
-    FilesDownloaded.create({
-        fileUrl,
-        userId
-    })
-    .then((response) => {
-        res.status(201).json({seccess: true});
-    })
-    .catch(err => {
-        console.log(err);
-    }) 
-    
+    DownloadHistory.create({ fileUrl: fileUrl, userId: userId })
+        .then((response) => {
+            res.status(201).json({ seccess: true });
+        })
+        .catch(err => {
+            console.log(err);
+        })
+
 }
 
 exports.getDownloadHistory = (req, res) => {
-    FilesDownloaded.findAll({where: {userId: req.user.id}})
-    .then((response) => {
-        res.status(201).json(response);
-    })
-    .catch(err => console.log(err));
+    DownloadHistory.find({ userId: req.user.id })
+        .then((response) => {
+            res.status(201).json(response);
+        })
+        .catch(err => console.log(err));
 }

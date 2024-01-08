@@ -7,11 +7,11 @@ const userAunthentication = require('../middleware/auth');
 
 router.get('/expense', expenseController.getExpenseForm);
 
-router.delete('/expense/addexpense/:id',userAunthentication.authenticate,  expenseController.deleteExpense);
+router.delete('/expense/addexpense/:id', userAunthentication.authenticate, expenseController.deleteExpense);
 
-router.post('/expense/addexpense', userAunthentication.authenticate , expenseController.postExpense);
+router.post('/expense/addexpense', userAunthentication.authenticate, expenseController.postExpense);
 
-router.get('/expenses',userAunthentication.authenticate ,   expenseController.getExpenses);
+router.get('/expenses', userAunthentication.authenticate, expenseController.getExpenses);
 
 
 module.exports = router;
