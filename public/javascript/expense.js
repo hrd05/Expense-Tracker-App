@@ -146,7 +146,7 @@ function saveFileToDb(fileURL, userId) {
     axios.post("/user/download", downloadHistory)
         .then((response) => {
             //console.log('ll');
-            console.log(response);
+            // console.log(response);
         })
         .catch(err => console.log(err));
 }
@@ -162,15 +162,15 @@ function setExpensesPerPage() {
 
 window.addEventListener("DOMContentLoaded", () => {
     const pageSize = localStorage.getItem('expensesPerPage');
+    selectElement.value = pageSize;
     // selectElement.value = pageSize
     const page = 1;
     axios.get(`/expenses?page=${page}&pageSize=${pageSize}`, { headers: { "Authorization": token } })
         .then((res) => {
-            // console.log(res);
-            const isPremium = res.data.isPremium
+            const isPremium = res.data.isPremiumx
             checkPremium(isPremium);
             showExpense(res.data.expenses);
-            // showPagination(res.data);
+            showPagination(res.data);
         })
         .catch(err => console.log(err));
 });
@@ -180,8 +180,7 @@ function showPagination({
     hasNextPage,
     nextPage,
     hasPreviousPage,
-    previousPage,
-    lastPage
+    previousPage
 }) {
     pagination.innerHTML = '';
 
@@ -210,10 +209,9 @@ function showPagination({
 }
 
 function getExpenses(page) {
-
-    axios.get(`/expenses?page=${page}`, { headers: { "Authorization": token } })
+    const pageSize = localStorage.getItem('expensesPerPage');
+    axios.get(`/expenses?page=${page}&pageSize=${pageSize}`, { headers: { "Authorization": token } })
         .then((res) => {
-
             showExpense(res.data.expenses);
             showPagination(res.data);
         })

@@ -4,6 +4,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 // const helmet = require('helmet');
+require('dotenv').config();
 
 //models //
 // const User = require('./models/userSignup');
@@ -16,7 +17,7 @@ const mongoose = require('mongoose');
 //routes //
 const userRoute = require('./routes/user');
 const expenseRoute = require('./routes/expense');
-const purchaseRoute = require('./routes/purchase');
+const purchaseRoute = require('./routes/order');
 const resetRoute = require('./routes/reset');
 
 
@@ -31,18 +32,12 @@ app.use(bodyParser.json());
 
 
 app.use(userRoute);
-
-
-
-
 app.use(expenseRoute);
-
 app.use(purchaseRoute);
-
 app.use(resetRoute);
 
 
-mongoose.connect('mongodb+srv://harshdunkhwal55:hbCkEDLtWHpEFNiB@cluster0.al3derw.mongodb.net/expense?retryWrites=true&w=majority')
+mongoose.connect(process.env.MONGODB_URL)
     .then((result) => {
         console.log('connected');
         app.listen(3000);

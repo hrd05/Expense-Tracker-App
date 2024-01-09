@@ -3,8 +3,8 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const User = require('../models/userSignup');
-const DownloadHistory = require('../models/downloadhistory');
+const User = require('../models/user');
+const DownloadHistory = require('../models/download-history');
 // const { where } = require('sequelize');
 const { response } = require('express');
 

@@ -3,9 +3,11 @@ const path = require('path');
 const nodemailer = require('nodemailer');
 const uuid = require('uuid');
 const bcrypt = require('bcrypt');
-const User = require('../models/userSignup');
-const Forgotpassword = require('../models/forgotPass');
-require('dotenv').config();
+const User = require('../models/user');
+const Forgotpassword = require('../models/forgot-pass');
+// const { ObjectId } = require('mongoose');
+const { ObjectId } = require('mongodb');
+// require('dotenv').config();
 
 
 const getforgotpassword = (req, res) => {
@@ -23,21 +25,22 @@ const transporter = nodemailer.createTransport({
 const forgotpassword = async (req, res) => {
     try {
         const { email } = req.body;
-        const user = await User.findOne({ where: { email } });
+        const user = await User.findOne({ email: email });
         if (user) {
             const id = uuid.v4();
-            user.createForgotpassword({ id, active: true }).catch((err) => {
-                throw new Error(err);
-            });
+            await Forgotpassword.create({ _id: id, active: true, userId: user._id })
+            // user.createForgotpassword({ id, active: true }).catch((err) => {
+            //     throw new Error(err);
+            // });
 
-            console.log(id);
+            // console.log(id);
             // Configure email details
             const mailOptions = {
                 from: 'harshdunkhwal55@gmail.com', // Replace with your email address
                 to: email,
                 subject: 'Password Reset',
                 text: 'HI this is just a dummy mail for testing',
-                html: `<a href="/password/resetpassword/${id}">Reset password</a>`,
+                html: `<a href="http://localhost:3000/password/resetpassword/${id}">Reset password</a>`,
             };
 
             // Send the email using nodemailer
@@ -62,10 +65,11 @@ const forgotpassword = async (req, res) => {
 // The rest of your code remains unchanged
 const resetpassword = (req, res) => {
     const id = req.params.id;
-    Forgotpassword.findOne({ where: { id } }).then(forgotpasswordrequest => {
+    // console.log(id, 'reset password');
+    Forgotpassword.findOneAndUpdate({ _id: id }, { $set: { active: false } }).then(forgotpasswordrequest => {
         if (forgotpasswordrequest) {
-            forgotpasswordrequest.update({ active: false });
-            res.status(200).send(`<html>
+            // forgotpasswordrequest.update({ active: false });
+            return res.status(200).send(`<html>
                                     <script>
                                         function formsubmitted(e){
                                             e.preventDefault();
@@ -91,8 +95,9 @@ const updatepassword = (req, res) => {
     try {
         const { newpassword } = req.query;
         const { resetpasswordid } = req.params;
-        Forgotpassword.findOne({ where: { id: resetpasswordid } }).then(resetpasswordrequest => {
-            User.findOne({ where: { id: resetpasswordrequest.userId } }).then(user => {
+        Forgotpassword.findOne({ _id: resetpasswordid }).then(resetpasswordrequest => {
+
+            User.findOne({ _id: resetpasswordrequest.userId }).then(user => {
                 // console.log('userDetails', user)
                 if (user) {
                     //encrypt the password
@@ -109,9 +114,10 @@ const updatepassword = (req, res) => {
                                 console.log(err);
                                 throw new Error(err);
                             }
-                            user.update({ password: hash }).then(() => {
-                                res.status(201).json({ message: 'Successfuly update the new password' })
-                            })
+                            User.updateOne({ _id: user._id }, { password: hash })
+                                .then(() => {
+                                    res.status(201).json({ message: 'Successfuly update the new password' })
+                                })
                         });
                     });
                 } else {

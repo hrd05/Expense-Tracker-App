@@ -1,9 +1,9 @@
 
 const path = require('path');
 const Expense = require('../models/expense');
-const User = require('../models/userSignup');
+const User = require('../models/user');
 const jwt = require('jsonwebtoken');
-const sequelize = require('../util/database');
+// const sequelize = require('../util/database');
 const S3Services = require('../services/S3services');
 
 
@@ -99,10 +99,30 @@ exports.postExpense = async (req, res) => {
 
 
 exports.getExpenses = async (req, res) => {
+
+    const pageSize = Number(req.query.pageSize);
+    const page = Number(req.query.page) || 0;
+    // console.log(pageSize, page);
+
     try {
+
         const isPremium = req.user.isPremium;
-        const expenses = await Expense.find({ userId: req.user })
-        return res.status(201).json({ expenses: expenses, isPremium: isPremium });
+        const totalExpenses = await Expense.countDocuments({ userId: req.user })
+
+        const expenses = await Expense.find({ userId: req.user }).skip((page - 1) * pageSize).limit(pageSize)
+
+        // console.log(expenses, totalExpenses);
+
+        return res.status(201).json({
+            expenses: expenses,
+            currentPage: page,
+            hasNextPage: totalExpenses - (page * pageSize) > 0,
+            nextPage: page + 1,
+            hasPreviousPage: page > 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalExpenses / pageSize),
+            isPremium: req.user.isPremium
+        });
     }
 
     catch (err) {
@@ -134,7 +154,7 @@ exports.getExpenses = async (req, res) => {
     //             hasPreviousPage: page > 1,
     //             previousPage: Number(page) - 1,
     //             lastPage: Math.ceil(totalExpenses / EXPENSES_PER_PAGE),
-    //             user: req.user
+    //          
     //         })
     //     })
     //     .catch(err => {
