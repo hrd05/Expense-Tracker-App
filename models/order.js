@@ -1,7 +1,11 @@
 const { Schema, default: mongoose } = require('mongoose');
 
 const orderSchema = new Schema({
+<<<<<<< HEAD
     rzpOrderId: {
+=======
+    orderId: {
+>>>>>>> 3f9c497b0a904937dad6f5e656953d024da9c68b
         type: String,
         required: true
     },
@@ -10,8 +14,12 @@ const orderSchema = new Schema({
     },
     status: {
         type: String,
+<<<<<<< HEAD
         default: 'PENDING',
         enum: { values: ['PENDING', 'SUCCESS'], message: '{VALUE} is not supported' }
+=======
+        default: 'Pending'
+>>>>>>> 3f9c497b0a904937dad6f5e656953d024da9c68b
     },
     userId: {
         type: Schema.Types.ObjectId,
@@ -39,4 +47,8 @@ module.exports = mongoose.model('Order', orderSchema);
 //     status: Sequelize.STRING
 // });
 
+<<<<<<< HEAD
 // module.exports = Order;
+=======
+// module.exports = Order;
+>>>>>>> 3f9c497b0a904937dad6f5e656953d024da9c68b

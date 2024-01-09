@@ -1,10 +1,19 @@
 const Razorpay = require('razorpay');
+<<<<<<< HEAD
 const Order = require('../models/order');
 const User = require('../models/user');
 const Expense = require('../models/expense');
 // const { Sequelize } = require('sequelize');
 // const sequelize = require('../util/database');
 // require('dotenv').config();
+=======
+const Order = require('../models/orders');
+const User = require('../models/userSignup');
+const Expense = require('../models/expense');
+const { Sequelize } = require('sequelize');
+const sequelize = require('../util/database');
+require('dotenv').config();
+>>>>>>> 3f9c497b0a904937dad6f5e656953d024da9c68b
 
 
 exports.getPremiumMember = async (req, res) => {
@@ -23,11 +32,20 @@ exports.getPremiumMember = async (req, res) => {
             }
             try {
                 const newOrder = await Order.create({
+<<<<<<< HEAD
                     rzpOrderId: order.id,
                     userId: req.user
                 })
 
                 return res.status(201).json({ newOrder, key_id: rzp.key_id });
+=======
+                    orderId: order.id,
+                    status: 'Pending',
+                    userId: req.user
+                })
+
+                return res.status(201).json({ order, key_id: rzp.key_id });
+>>>>>>> 3f9c497b0a904937dad6f5e656953d024da9c68b
             }
             catch (err) {
                 throw new Error(err);
@@ -60,7 +78,11 @@ exports.updateTransactionstatus = async (req, res) => {
 
     try {
         const { payment_id, order_id } = req.body;
+<<<<<<< HEAD
         const promise1 = await Order.findOneAndUpdate({ rzpOrderId: order_id }, { $set: { status: 'SUCCESS', paymentId: payment_id } })
+=======
+        const promise1 = await Order.findOneAndUpdate({ orderId: order_id }, { $set: { status: 'Successfull', paymentId: payment_id } })
+>>>>>>> 3f9c497b0a904937dad6f5e656953d024da9c68b
 
 
         // const promise1 = order.update({ paymentid: payment_id, status: 'SUCCESSFULL' })
@@ -96,4 +118,8 @@ exports.showLeaderboard = async (req, res) => {
         console.log(err);
     }
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 3f9c497b0a904937dad6f5e656953d024da9c68b

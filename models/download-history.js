@@ -39,4 +39,8 @@ module.exports = moongose.model('DownloadHistory', downloadHistorySchema);
 //     }
 // });
 
+<<<<<<< HEAD
 // module.exports = FilesDownloaded;
+=======
+// module.exports = FilesDownloaded;
+>>>>>>> 3f9c497b0a904937dad6f5e656953d024da9c68b

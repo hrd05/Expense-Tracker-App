@@ -60,4 +60,8 @@ module.exports = mongoose.model('User', userSchema);
 //     totalExpense: Sequelize.INTEGER
 // });
 
+<<<<<<< HEAD
 // module.exports = User;
+=======
+// module.exports = User;
+>>>>>>> 3f9c497b0a904937dad6f5e656953d024da9c68b
